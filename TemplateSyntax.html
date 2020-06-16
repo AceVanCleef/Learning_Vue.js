@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Template Syntax</title>
+  <!--<script src="https://unpkg.com/vue"></script>-->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+</head>
+<body>
+	<div id="app">
+		<h1>Interpolation</h1>
+		<h2>Text interpolation</h2>
+		<span>Message: {{ msg }}</span>
+
+		<!-- One Time Interpolation (v-once) -->
+		<span v-once>This will never change: {{ msg }}</span>
+
+
+		<h2>Parsing Raw HTML</h2>
+		<p>Use v-html directive:</p>
+		<p>Using mustaches: {{ rawHtml }}</p>
+		<p>Using v-html directive: <span v-html="rawHtml"></span></p>
+		<p>Note: only use html interpolation from trusted sources, i.e. yourself :)</p>
+
+
+		<h2>Attributes</h2>
+		<p>Use v-bind instead of {{}}</p>
+		<div v-bind:id="dynamicId">Checkout its ID.</div>
+		<button v-bind:disabled="isButtonDisabled">Button</button>
+
+		<h3>Property keys used above:</h3>
+		<ol>
+			<li>dynamicID</li>
+			<li>isButtonDisabled</li>
+		</ol>
+		<p>They are declared in the data as property and used as mapping keys in directives</p>
+
+		<h2>Javascript expressions</h2>
+		<p>{{ }} can evaluate ONE SINGLE JS expression</p>
+		<p>Example: 3 + 2 = {{ 3 + 2 }}</p>
+		<p>They exist within data scope of Vue object</p>
+
+
+
+		<h2>Directives</h2>
+		<ol>
+			<li>Start with <b>v-</b> prefix</li>
+			<li>directive attribues = single JS expression</li>
+			<li>applies reactife side ffects to DOM when value of expression changes</li>
+			<li>some directive can take an <b>argument</b></li>
+		</ol>
+
+		Attributes:
+		<ol>
+			<li>v-if</li>
+			<li>v-bind:href="key": Bindy data {key : value } to the atrribute</li>
+			<li>v-on: listens to DOM events<br />
+				<!--<a v-on:click="doSomething"> Do SMTH </a>-->
+			</li>
+		</ol>
+
+		Dynamic Attributes:
+		<ol>
+			<li>string as argument expected</li>
+			<li>null can be used to remove the binding</li>
+		</ol>
+
+		<a v-bind:[attributeName]="url" v-bind:[attrName2}="tabDestination"> ... </a>
+		<!-- attributeName in data { attributeName: 'href'}-->
+
+
+		<h2>Modifiers</h2>
+		<p>Start with a .</p>
+		<p>Example: v-on:submit.prevent</p>
+		<!--<form v-on:submit.prevent="onSubmit"> ... </form>-->
+	</div>
+
+<script>
+	var vm = new Vue({
+		el: '#app',
+		data: {
+			msg: "Text interpolation",
+			rawHtml: '<span style="color:red;">This should be red</span>',
+			dynamicId: 'BananaShop',
+			//anything that evaluates as false or true, will activate / disactivate the button.
+			//true, 1, ... => true
+			//false, 0, null, undefined => false
+			isButtonDisabled: true,
+			attributeName: 'href',
+			url: "www.stefanwohlgensinger.com",
+			attrName2: 'target',
+			tabDestination: '_blank'
+		}
+	});
+</script>
+</body>
+</html>

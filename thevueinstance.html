@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>The Vue Instance</title>
+  <!--<script src="https://unpkg.com/vue"></script>-->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+</head>
+<body>
+
+<!-- Data and Methods of Vue instance
+	- one root vue object: new Vue(...)
+	- adds data to its reactivity system
+	- ensures bi-directional binding of properties (data)
+	- to be registered as reactive, data has to be added during instanciation of the Vue object. -> Data has to be defined before initializing the Vue object, even with an empty / default value.
+
+	eg.
+	data: {
+	  newTodoText: '',
+	  visitCount: 0,
+	  hideCompletedTodos: false,
+	  todos: [],
+	  error: null
+	}
+
+	- Object.freeze(myDataObj) will stop tracking changes of myDataObj
+
+-->
+
+<!-- Instance Lifecycle Hooks
+	- Life cycle hooks: Functions allowing users to add their own code to specific stages of the lifecycle.
+	o Created: runs after intance is created
+	o mounted: runs after instance mounted to DOM
+	o updated: runs after a change occured (?)
+	o destroyed: runs after instance has been destoyed (?)
+	o ...
+	- Call lifecycle methods using this: `vm.$watch('a', newValue => this.myMethod())`
+	- Lifecycle: 
+		beforeCreated > created > beforeMount > mounted > beforeUpdate > updated > beforeDestroy > destroyed
+	- Avoid using arrow function for Vue methods and lifecycle hooks:
+	https://stackoverflow.com/questions/49872236/calling-a-method-from-created-hook-in-vuejs-component
+-->
+
+<!-- Vue instance functions (start with $) -->
+<div id="app">
+	<div id="example">{{ a }}</div>
+</div>
+
+<script>
+	//Data and Methods of Vue instance
+	var data = { a: 1 };
+	var vm = new Vue({
+	  el: '#example',
+	  data: data,
+	  created: function () {
+	    // `this` points to the vm instance
+	    console.log('a is: ' + this.a)
+	  }
+	});
+
+	vm.$data === data; // => true
+	vm.$el === document.getElementById('example'); // => true
+
+	// $watch is an instance method
+	vm.$watch('a', function (newValue, oldValue) {
+	  // This callback will be called when `vm.a` changes
+	  console.log("callback");
+	});
+
+
+	
+
+</script>
+</body>
+</html>

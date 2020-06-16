@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Computed Properties</title>
+  <!--<script src="https://unpkg.com/vue"></script>-->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+</head>
+<body>
+
+	<h1>Computed Properties</h1>
+
+	<ol>
+		<li>in-template expressions are meant for simple operations</li>
+		<li>Putting too much logic into templates bloats them -> harder to read the intention, especially when same expression used more than once</li>
+		<li>{ { message.split('').reverse().join('') } } is too long. Better: { { message }}</li>
+		<li>Computed Properties => for complex logic</li>
+	</ol>
+
+	<div id="example">
+	  <p>Original message: "{{ message }}"</p>
+	  <p>Computed reversed message: "{{ reversedMessage }}"</p>
+	  <p>A string in computed: "{{testMSG}}"</p>
+	</div>
+
+	<h2>Computed Caching vs Methods</h2>
+	<div id="example2">
+		<p>Reversed message: "{{ reverseMessage() }}"</p>
+	</div>
+
+	<h2>Property vs Method</h2>
+	<ol>
+		<li>computed: a computed property (cached). Use when: to reduce (expensive) computation time.
+		<li>method: a method (always executed). Use when: you always want to have the up-to-date value</li>
+	</ol>
+
+	<p>The difference: Update - behaviour. <br /> Properties are cached on their reactive dependencies. Only when the underlying dependency's value changes, the property gets re-evaluated.</p>
+
+	<div id="example3">
+		<h4>Test</h4>
+		<p>{{ now }}</p>
+		<p>{{ now() }}</p>
+		<button >Update Timestamp</button>
+	</div>
+
+	<h2>Computed vs Watched Property</h2>
+	<ol>
+		<li>Watched callbacks -> like bi-directional bindings (observe and react to data changes)</li>
+		<li>recommended: using computed properties</li>
+	</ol>
+
+
+	<div id="demo1">{{ fullName }}</div>
+	<div id="demo2">{{ fullName }}</div>
+
+
+	<h2>Computed Setter</h2>
+	<ol>
+		<li>Default: computed properties == getters</li>
+		<li>Also possible: Create a setter</li>
+	</ol>
+
+	<div id="demo3">{{fullName}}</div>
+
+	<h2>Watchers</h2>
+	<ol>
+		<li>a custom observer callback</li>
+		<li>Use when: you want to perform asynchronous or expensive operations in response to changing data.</li>
+		<li>Also possible to use: vm.$watch API</li>
+	</ol>
+
+	<div id="watch-example">
+	  <p>
+	    Ask a yes/no question:
+	    <input v-model="question">
+	  </p>
+	  <p>{{ answer }}</p>
+	</div>
+
+<script>
+	var vm = new Vue({
+	  el: '#example',
+	  data: {
+	    message: 'Hello'
+	  },
+	  computed: {
+	    // a computed getter
+	    reversedMessage: function () {
+	      // `this` points to the vm instance
+	      return this.message.split('').reverse().join('')
+	    },
+	    //testMSG: 'is this possible?' -> DOES NOT work. Only functions
+	    testMSG: function(){
+	    	return 'is this possible?';
+	    }
+	  }
+	});
+
+	//reversedMessage is declared declaratively => no side effects, easier to test
+
+	var vm2 = new Vue({
+		el: "#example2",
+		data: {
+		    message: 'Salut'
+		  },
+		// in component
+		methods: {
+		  reverseMessage: function () {
+		    return this.message.split('').reverse().join('')
+		  }
+		}
+	});
+
+	var vm3 = new Vue({
+		el: '#example3',
+		computed: {
+		    now: function () {
+			    return Date.now()	//never updates, since Date.now() gets stored once and never changes. Date.now is not a reactive property (see data: {...})
+			}
+		},
+		methods: {
+			now: function () {
+				return Date.now();	//will always show newest timestamp
+			}
+		}
+	});
+
+	var vm4 = new Vue({
+	  el: '#demo1',
+	  data: {
+	    firstName: 'Foo',
+	    lastName: 'Bar',
+	    fullName: 'Foo Bar'
+	  },
+	  //repetitive and imperative:
+	  watch: {
+	    firstName: function (val) {
+	      this.fullName = val + ' ' + this.lastName
+	    },
+	    lastName: function (val) {
+	      this.fullName = this.firstName + ' ' + val
+	    }
+	  }
+	});
+
+	var vm5 = new Vue({
+	  el: '#demo2',
+	  data: {
+	    firstName: 'Foo',
+	    lastName: 'Bar'
+	  },
+	  computed: {
+	    fullName: function () {
+	      return this.firstName + ' ' + this.lastName
+	    }
+	  }
+	});
+
+	var vm6 = new Vue({
+	  el: '#demo3',
+	  data: {
+	    firstName: 'Jonny',
+	    lastName: 'Depp'
+	  },
+	  computed: {
+	    fullName: {
+		    // getter
+		    get: function () {
+		      return this.firstName + ' ' + this.lastName
+		    },
+		    // setter
+		    set: function (newValue) {	//can be called such as: vm6.fullname='Hans Vader';
+		      var names = newValue.split(' ')
+		      this.firstName = names[0]
+		      this.lastName = names[names.length - 1]
+		    }
+		  }
+	  	}
+	});
+</script>
+
+<!-- Watchers -->
+
+<!-- Since there is already a rich ecosystem of ajax libraries    -->
+<!-- and collections of general-purpose utility methods, Vue core -->
+<!-- is able to remain small by not reinventing them. This also   -->
+<!-- gives you the freedom to use what you're familiar with.      -->
+<script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
+<script>
+var watchExampleVM = new Vue({
+  el: '#watch-example',
+  data: {
+    question: '',
+    answer: 'I cannot give you an answer until you ask a question!'
+  },
+  watch: {
+    // whenever question changes, this function will run
+    question: function (newQuestion, oldQuestion) {
+      this.answer = 'Waiting for you to stop typing...'
+      this.debouncedGetAnswer()
+    }
+  },
+  created: function () {
+    // _.debounce is a function provided by lodash to limit how
+    // often a particularly expensive operation can be run.
+    // In this case, we want to limit how often we access
+    // yesno.wtf/api, waiting until the user has completely
+    // finished typing before making the ajax request. To learn
+    // more about the _.debounce function (and its cousin
+    // _.throttle), visit: https://lodash.com/docs#debounce
+    this.debouncedGetAnswer = _.debounce(this.getAnswer, 500)
+  },
+  methods: {
+    getAnswer: function () {
+      if (this.question.indexOf('?') === -1) {
+        this.answer = 'Questions usually contain a question mark. ;-)'
+        return
+      }
+      this.answer = 'Thinking...'
+      var vm = this
+      axios.get('https://yesno.wtf/api')
+        .then(function (response) {
+          vm.answer = _.capitalize(response.data.answer)
+        })
+        .catch(function (error) {
+          vm.answer = 'Error! Could not reach the API. ' + error
+        })
+    }
+  }
+})
+</script>
+</body>
+</html>

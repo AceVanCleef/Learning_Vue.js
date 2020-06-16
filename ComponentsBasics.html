@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Components Basics</title>
+  <!--<script src="https://unpkg.com/vue"></script>-->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+</head>
+<body>
+	<h1>Components Basics</h1>
+	
+
+	<div id="components-demo">
+	  <button-counter></button-counter>
+	  <button-counter></button-counter>
+	  <button-counter></button-counter>
+	  <p>Each button is a new instance -> has own state</p>
+
+		<ol>
+			<li>Accept: data, computed, watch, methods, and lifecycle hooks.</li>
+			<li>Does not accept: root specific options like el</li>
+			<li>data: expects a function instaed of an object (enables component to carry independent state).</li>
+		</ol>
+
+
+		<h2>Organizing Components</h2>
+
+		<ol>
+			<li>Must be registered in order to use in templates</li>
+			<li>registration types: 
+				<ol>
+					<li>global: Vue.component('compName', {...}. Can be used in any root Vue instance (-> new Vue).</li>
+					<li>local: <a href="https://vuejs.org/v2/guide/components-registration.html">Full registration guide</a></li>
+				</ol>
+			</li>
+		</ol>
+
+
+		<h2>Passing Data to Child Components with Props</h2>
+		<ol>
+			<li>Props: custom attributes you can register on a component</li>
+			<li>Value passed to prop become a property of that component instance (props are used similar to html attributes)</li>
+			<li>Compoment can have as many props as you want</li>
+		</ol>
+
+		<p>Example</p>
+		<blog-post title="My journey with Vue"></blog-post>
+		<blog-post title="Blogging with Vue"></blog-post>
+		<blog-post title="Why Vue is so fun"></blog-post>
+		<!-- title is a props of the blog-post component -->
+
+	</div>
+
+	<h3>Passing data using a data array</h3>
+	<ol>
+		<li>v-bind: use to dynamically bind prop data</li>
+		<li>Ideal for when fetching form API (data you receive unknown ahead of tim)</li>
+	</ol>
+
+	<div id="blog-post-demo">
+		<blog-post
+		  v-for="post in posts"
+		  v-bind:key="post.id"
+		  v-bind:title="post.title"
+		></blog-post>
+	</div>
+
+	<div id="blog-post-demo2">
+		<h2>A single root element</h2>
+		<ol>
+			<li>Want to contain more data than just the title</li>
+			<li>Instead, wrap into a root element</li>
+			<li>When introducing many props, reduce it to one summerizing prop. E.g. from title, content, date -> post</li>
+		</ol>
+
+		<blog-post2
+		  v-for="post in posts"
+		  v-bind:key="post.id"
+		  v-bind:post="post"
+		></blog-post2>
+
+	</div>
+
+	<h2>Listening to Child Components Events</h2>
+	<p>tbd</p>
+
+<script>
+	
+	//the component
+	// Define a new component called button-counter
+	Vue.component('button-counter', {
+	  data: function () {
+	    return {
+	      count: 0
+	    }
+	  },
+	  template: '<button v-on:click="count++">You clicked me {{ count }} times.</button>'
+	});
+
+	//root Vue instance
+	var vm = new Vue({ el: '#components-demo' });
+
+	Vue.component('blog-post', {
+	  props: ['title'],
+	  template: '<h3>{{ title }}</h3>'
+	});
+
+	//using a data array
+	var vm2 = new Vue({
+		el: '#blog-post-demo',
+		data: {
+		    posts: [
+		      { id: 1, title: 'My journey with Vue 2' },
+		      { id: 2, title: 'Blogging with Vue 2' },
+		      { id: 3, title: 'Why Vue is so fun 2' }
+		    ]
+		}
+	});
+
+	var vm3 = new Vue({
+		el: '#blog-post-demo2',
+		data: {
+		    posts: [
+		      { id: 1, title: 'My journey with Vue 3' },
+		      { id: 2, title: 'Blogging with Vue 3' },
+		      { id: 3, title: 'Why Vue is so fun 3' }
+		    ]
+		}
+	});
+
+	Vue.component('blog-post2', {
+	  props: ['post'],
+	  template: `
+	    <div class="blog-post2">
+	      <h3>{{ post.title }}</h3>
+	      <div v-html="post.content"></div>
+	    </div>
+	  `
+	});
+</script>
+</body>
+</html>
